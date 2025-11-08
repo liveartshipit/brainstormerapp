@@ -1,16 +1,27 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Idea, MindMapState, Task } from '../types';
 
 const generateId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
 const getApiKey = (): string | null => {
-    const apiKey = process.env.API_KEY;
-    if (!apiKey) {
-        console.warn("API_KEY is not set.");
-        return null;
+    // First, try to get the key from localStorage for the exported app
+    try {
+        const apiKeyFromStorage = localStorage.getItem('gemini_api_key');
+        if (apiKeyFromStorage) {
+            return apiKeyFromStorage;
+        }
+    } catch (e) {
+        console.error("Could not access localStorage", e);
     }
-    return apiKey;
+    // Fallback to environment variable (for the development environment)
+    const apiKeyFromEnv = process.env.API_KEY;
+    if (apiKeyFromEnv) {
+        return apiKeyFromEnv;
+    }
+    console.warn("API key not found in environment variables or localStorage.");
+    return null;
 };
 
 const getMockIdeas = (topic: string): Promise<Idea[]> => {

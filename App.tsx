@@ -1,7 +1,10 @@
+
+
 import React, { useState, useCallback, useEffect } from 'react';
 import BrainstormPanel from './components/BrainstormPanel';
 import MindMapCanvas from './components/MindMapCanvas';
 import Toolbar from './components/Toolbar';
+import ApiKeyModal from './components/ApiKeyModal';
 import type { Idea, Node, Connector, Tool, MindMapState, HistoryState } from './types';
 import { MENU_ICON } from './constants';
 
@@ -13,6 +16,14 @@ const App: React.FC = () => {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [activeTool, setActiveTool] = useState<Tool>('select');
   const [isPanelOpen, setIsPanelOpen] = useState(window.innerWidth >= 768);
+  
+  const [apiKey, setApiKey] = useState<string | null>(() => {
+    try {
+        return localStorage.getItem('gemini_api_key') || process.env.API_KEY || null;
+    } catch (e) {
+        return process.env.API_KEY || null;
+    }
+  });
 
   const [history, setHistory] = useState<HistoryState>({
     past: [],
@@ -114,6 +125,19 @@ const App: React.FC = () => {
     const newIdea: Idea = { id: generateId(), text };
     setIdeas(prev => [...prev, newIdea]);
   };
+
+  const handleSaveApiKey = (key: string) => {
+      try {
+          localStorage.setItem('gemini_api_key', key);
+          setApiKey(key);
+      } catch(e) {
+          alert("Could not save API Key. Your browser might be in private mode or has storage disabled.");
+      }
+  };
+
+  if (!apiKey) {
+      return <ApiKeyModal onSave={handleSaveApiKey} />;
+  }
 
   return (
     <div className="flex h-screen w-screen font-sans text-gray-900 bg-gray-100 overflow-hidden">
