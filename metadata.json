@@ -1,0 +1,5 @@
+{
+  "name": "Copy of AI Mind Mapper",
+  "description": "A brainstorming and mind mapping tool powered by Gemini. Brainstorm ideas in a list, then drag and drop them onto a canvas to build a visual mind map with connectors and shapes.",
+  "requestFramePermissions": []
+}
